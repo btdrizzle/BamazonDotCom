@@ -110,23 +110,11 @@ function addInventory() {
                 console.log("We don't have that product, please select another.");
                 displayInventory();
             }else{
-                let currentNum;
-                let newNum;
-                let product;
-                const query1 = `SELECT * from products WHERE item_id=${parseInt(answer.productId)}`;
-                connection.query(query1, function(err,res) {
+                const query1 = `UPDATE products SET stock_quantity = stock_quantity + ? WHERE item_id = ?`;
+                connection.query(query1, [parseInt(answer.productNum), parseInt(answer.productId)],function(err,res) {
                     if(err) throw err;
-                    product = res[0].product_name;
-                    currentNum = res[0].stock_quantity;
-                    newNum = currentNum + parseInt(answer.productNum);
-                }).then(function() {
-                    const query2 = `UPDATE products SET stock_quantity = ${newNum} WHERE item_id=${parseInt(answer.productId)}`;
-                    connection.query(query2, function(err,res) {
-                        if(err) throw err;
-                        console.log(`${product} updated from ${currentNum} in stock to ${newNum}`);
-                        newTransaction();
-                    });
-                }) 
+                    newTransaction();
+                });
             }
         })
     })                     
